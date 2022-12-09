@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { DictContext } from "../../context/DictContext";
 import { Dict, Lang } from "../../types/types";
 
-interface Props {
-  dict: Dict[] | [];
-  cbDictUpd: (data: Dict[]) => void;
-}
-
-export const HomeForm: React.FC<Props> = ({ dict, cbDictUpd }) => {
+export const HomeForm = () => {
+  const { dict, updDictHandler } = useContext(DictContext);
   const [data, setData] = useState(dict);
   const [wordRu, setWordRu] = useState<string>("");
   const [wordEs, setWordEs] = useState<string>("");
@@ -15,9 +12,9 @@ export const HomeForm: React.FC<Props> = ({ dict, cbDictUpd }) => {
     setData(dict);
   }, [dict]);
 
-  useEffect(() => {
-    cbDictUpd(data);
-  }, [JSON.stringify(data)]);
+  const isWordExist = (word: string): boolean => {
+    return data.some((pair: Dict) => pair.es === word);
+  };
 
   const changeWord = (eo: React.FormEvent<HTMLInputElement>) => {
     const target = eo.target as HTMLInputElement;
@@ -26,13 +23,19 @@ export const HomeForm: React.FC<Props> = ({ dict, cbDictUpd }) => {
 
   const addWord = () => {
     if (!wordRu || !wordEs) return;
+    if (isWordExist(wordEs)) {
+      alert("Слово уже есть в словаре");
+      return;
+    }
     const newWord = {
       ru: wordRu,
       es: wordEs,
     };
-    setData([...data, newWord]);
+    const newData = [...data, newWord];
+    setData(newData);
     setWordRu("");
     setWordEs("");
+    updDictHandler(newData);
   };
 
   return (

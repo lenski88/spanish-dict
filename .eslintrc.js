@@ -21,5 +21,6 @@ module.exports = {
     "prettier/prettier": ["error"],
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/triple-slash-reference": "off",
+    "react/prop-types": "off",
   },
 };
